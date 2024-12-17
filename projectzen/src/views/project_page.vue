@@ -2,7 +2,7 @@
   <div class="project-editor">
     <!-- Верхняя панель инструментов -->
     <div class="toolbar">
-      <select v-model="fontSize" class="toolbar-item">
+      <select v-model="fontSize" class="toolbar-item" @change="updateFontSize">
         <option value="32px">Большой заголовок</option>
         <option value="24px">Заголовок</option>
         <option value="16px">Текст</option>
@@ -42,7 +42,10 @@
         @mouseup="saveSelection(index)"
         @keyup="saveSelection(index)"
       ></div>
-      <button @click="addBlock('text')" class="add-block-button">Добавить блок</button>
+      <div class="add-block-buttons">
+        <button @click="addBlock('text')" class="add-block-button">Добавить блок текста</button>
+        <button @click="addBlock('photo')" class="add-block-button">Вставить фото</button>
+      </div>
     </div>
 
     <!-- Кнопка сохранения -->
@@ -71,27 +74,28 @@ export default {
   methods: {
     applyStyle(style) {
       if (!this.selection || this.selectedBlockIndex === null) return;
-      const block = this.project.blocks[this.selectedBlockIndex];
-
-      const selectedText = this.selection.toString();
-      if (!selectedText) return;
-
-      const styledText = `<span style=\"${style}: ${style === 'bold' ? 'bold' : style};\">${selectedText}</span>`;
-      block.content = block.content.replace(selectedText, styledText);
-      this.updateContent(block.content, this.selectedBlockIndex);
+      const range = this.selection.getRangeAt(0);
+      const span = document.createElement("span");
+      span.style.fontWeight = style === "bold" ? "bold" : "";
+      span.style.fontStyle = style === "italic" ? "italic" : "";
+      span.style.textDecoration = style === "underline" ? "underline" : "";
+      range.surroundContents(span);
     },
     saveSelection(index) {
-      this.selection = window.getSelection().getRangeAt(0);
+      this.selection = window.getSelection();
       this.selectedBlockIndex = index;
-    },
-    updateContent(content, index) {
-      this.project.blocks[index].content = content;
     },
     updateBlockContent(event, index) {
       this.project.blocks[index].content = event.target.innerHTML;
     },
     addBlock(type) {
-      this.project.blocks.push({ type, content: "", fontSize: this.fontSize });
+      const fontSize = type === "text" ? "16px" : "";
+      this.project.blocks.push({ type, content: "", fontSize });
+    },
+    updateFontSize(event) {
+      if (this.selectedBlockIndex !== null) {
+        this.project.blocks[this.selectedBlockIndex].fontSize = event.target.value;
+      }
     },
     saveProject() {
       console.log(this.project);
@@ -143,6 +147,10 @@ export default {
   margin-bottom: 10px;
   border-radius: 4px;
   width: 100%;
+}
+.add-block-buttons {
+  display: flex;
+  gap: 10px;
 }
 .add-block-button {
   background-color: #333;
