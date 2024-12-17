@@ -10,6 +10,11 @@
       <button class="toolbar-item" @click="applyStyle('bold')">B</button>
       <button class="toolbar-item" @click="applyStyle('italic')">I</button>
       <button class="toolbar-item" @click="applyStyle('underline')">U</button>
+      <button class="toolbar-item" @click="addOrderedList">1.</button>
+      <button class="toolbar-item" @click="addUnorderedList">•</button>
+      <button class="toolbar-item" @click="addLink">Ссылка</button>
+      <button class="toolbar-item" @click="alignText('center')">Центр</button>
+      <button class="toolbar-item" @click="alignText('justify')">По ширине</button>
     </div>
 
     <!-- Поле для ввода названия проекта -->
@@ -39,8 +44,8 @@
         :style="{ fontSize: block.fontSize }"
         contenteditable="true"
         @input="updateBlockContent($event, index)"
-        @mouseup="saveSelection(index)"
-        @keyup="saveSelection(index)"
+        @mouseup="handleBlockSelection(index)"
+        @keyup="handleBlockSelection(index)"
       ></div>
       <div class="add-block-buttons">
         <button @click="addBlock('text')" class="add-block-button">Добавить блок текста</button>
@@ -66,7 +71,7 @@ export default {
         title: "",
         description: "",
         blocks: [
-          { type: "text", content: "", fontSize: "16px" },
+          {type: "text", content: "", fontSize: "16px"},
         ],
       },
     };
@@ -76,26 +81,61 @@ export default {
       if (!this.selection || this.selectedBlockIndex === null) return;
       const range = this.selection.getRangeAt(0);
       const span = document.createElement("span");
-      span.style.fontWeight = style === "bold" ? "bold" : "";
-      span.style.fontStyle = style === "italic" ? "italic" : "";
-      span.style.textDecoration = style === "underline" ? "underline" : "";
+
+      if (style === "bold") {
+        span.style.fontWeight =
+            this.selection.focusNode.parentElement.style.fontWeight === "bold"
+                ? "normal"
+                : "bold";
+      }
+      if (style === "italic") {
+        span.style.fontStyle =
+            this.selection.focusNode.parentElement.style.fontStyle === "italic"
+                ? "normal"
+                : "italic";
+      }
+      if (style === "underline") {
+        span.style.textDecoration =
+            this.selection.focusNode.parentElement.style.textDecoration === "underline"
+                ? "none"
+                : "underline";
+      }
       range.surroundContents(span);
     },
     saveSelection(index) {
       this.selection = window.getSelection();
       this.selectedBlockIndex = index;
     },
+    handleBlockSelection(index) {
+      this.saveSelection(index);
+      this.fontSize = this.project.blocks[index].fontSize;
+    },
     updateBlockContent(event, index) {
       this.project.blocks[index].content = event.target.innerHTML;
     },
     addBlock(type) {
       const fontSize = type === "text" ? "16px" : "";
-      this.project.blocks.push({ type, content: "", fontSize });
+      this.project.blocks.push({type, content: "", fontSize});
     },
     updateFontSize(event) {
       if (this.selectedBlockIndex !== null) {
         this.project.blocks[this.selectedBlockIndex].fontSize = event.target.value;
       }
+    },
+    addOrderedList() {
+      document.execCommand("insertOrderedList");
+    },
+    addUnorderedList() {
+      document.execCommand("insertUnorderedList");
+    },
+    addLink() {
+      const url = prompt("Введите URL:");
+      if (url) {
+        document.execCommand("createLink", false, url);
+      }
+    },
+    alignText(alignment) {
+      document.execCommand("justify" + alignment.charAt(0).toUpperCase() + alignment.slice(1));
     },
     saveProject() {
       console.log(this.project);
@@ -115,11 +155,13 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .toolbar {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .toolbar-item {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -127,9 +169,11 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .input-section {
   margin-bottom: 20px;
 }
+
 .project-title,
 .project-description {
   width: 100%;
@@ -137,9 +181,11 @@ export default {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
 .content-blocks {
   margin-bottom: 20px;
 }
+
 .content-block {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -148,10 +194,12 @@ export default {
   border-radius: 4px;
   width: 100%;
 }
+
 .add-block-buttons {
   display: flex;
   gap: 10px;
 }
+
 .add-block-button {
   background-color: #333;
   color: #fff;
@@ -160,9 +208,11 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .save-button {
   text-align: center;
 }
+
 .save-button button {
   background-color: #333;
   color: #fff;
