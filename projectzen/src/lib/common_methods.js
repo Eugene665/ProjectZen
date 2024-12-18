@@ -41,3 +41,22 @@ export async function signup(
     throw new Error(error.message);
   }
 }
+
+export async function addProject(projectDataJson, companyId) {
+  try {
+    const { data, error } = await supabase.rpc("add_project", {
+      p_project_data: projectDataJson,
+      p_company_id: companyId,
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function fetchProjects() {
+  const { data, error } = await supabase.rpc("fetch_projects");
+
+  if (error) throw error;
+  return data;
+}

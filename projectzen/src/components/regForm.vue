@@ -40,8 +40,7 @@
         try {
           await signup(this.email, this.password, this.username, this.radioChoice, this.about);
 
-          this.login({ email: this.email, username: this.username });
-          this.$router.push('/');
+          this.$router.push('/login');
         } catch (error) {
           alert(error.message);
         }

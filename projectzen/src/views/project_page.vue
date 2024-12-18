@@ -55,13 +55,22 @@
 
     <!-- Кнопка сохранения -->
     <div class="save-button">
-      <button @click="saveProject">Сохранить проект</button>
+      <button @click="postProject">Выложить проект</button>
     </div>
   </div>
 </template>
 
 <script>
+import { addProject, fetchProjects } from "../lib/common_methods.js";
+import { inject } from "vue";
 export default {
+  setup() {
+    const user = inject('user');
+        return {
+      user,
+    };
+    console.log(user);
+  },
   data() {
     return {
       fontSize: "16px",
@@ -140,7 +149,18 @@ export default {
     saveProject() {
       console.log(this.project);
     },
+    async postProject() {
+      console.log(this.project);
+      console.log(JSON.stringify(this.project));
+        const error = await addProject(JSON.stringify(this.project), this.user.id);
+        const data = await fetchProjects();
+        console.log(JSON.parse(data[0].project_data));
+        console.log(data);
+        if (error)
+          throw error;
+      
   },
+},
 };
 </script>
 
