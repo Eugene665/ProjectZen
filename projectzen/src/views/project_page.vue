@@ -13,8 +13,8 @@
       <button class="toolbar-item" @click="addOrderedList">1.</button>
       <button class="toolbar-item" @click="addUnorderedList">•</button>
       <button class="toolbar-item" @click="addLink">Ссылка</button>
-      <button class="toolbar-item" @click="alignText('center')">Центр</button>
-      <button class="toolbar-item" @click="alignText('justify')">По ширине</button>
+      <button class="toolbar-item" @click="alignText('left')">По левому краю</button>
+      <button class="toolbar-item" @click="alignText('center')">По центру</button>
     </div>
 
     <!-- Поле для ввода названия проекта -->
@@ -40,76 +40,75 @@
       <div
         v-for="(block, index) in project.blocks"
         :key="index"
-        class="content-block"
-        :style="{ fontSize: block.fontSize }"
-        contenteditable="true"
-        @input="updateBlockContent($event, index)"
-        @mouseup="handleBlockSelection(index)"
-        @keyup="handleBlockSelection(index)"
-      ></div>
-      <div class="add-block-buttons">
-        <button @click="addBlock('text')" class="add-block-button">Добавить блок текста</button>
-        <button @click="addBlock('photo')" class="add-block-button">Вставить фото</button>
+        class="content-wrapper"
+        @mouseenter="showAddButtons(index)"
+        @mouseleave="hideAddButtons(index)"
+      >
+        <div
+          class="content-block"
+          :style="block.type === 'text' ? { fontSize: block.fontSize, paddingRight: '10px' } : { paddingRight: '10px' }"
+          contenteditable="true"
+          @input="updateBlockContent($event, index)"
+          @mouseup="handleBlockSelection(index)"
+          @keyup="handleBlockSelection(index)"
+        >
+          <template v-if="block.type === 'text'" v-html="block.content"></template>
+          <template v-else-if="block.type === 'photo'">
+            <img :src="block.content" alt="Фото" class="photo-block" />
+          </template>
+        </div>
+        <button @click="deleteBlock(index)" class="delete-block-button"></button>
+        <div v-if="block.showButtons" class="add-inline-buttons">
+          <button @click="addBlockAtIndex('text', index)" class="add-block-button">Добавить блок текста</button>
+          <button @click="showPhotoOptionsAtIndex(index)" class="add-block-button">Вставить фото</button>
+        </div>
+        <!-- Кнопки добавления под каждым блоком -->
+        <div class="add-block-buttons">
+          <button @click="addBlockAtIndex('text', index)" class="add-block-button">Добавить блок текста</button>
+          <button @click="showPhotoOptionsAtIndex(index)" class="add-block-button">Вставить фото</button>
+        </div>
       </div>
     </div>
 
     <!-- Кнопка сохранения -->
     <div class="save-button">
-      <button @click="postProject">Выложить проект</button>
+      <button @click="saveProject">Сохранить проект</button>
+    </div>
+
+    <!-- Модальное окно для вставки фото -->
+    <div v-if="showPhotoModal" class="modal">
+      <div class="modal-content">
+        <h3>Выберите вариант вставки</h3>
+        <button @click="insertPhotoFromClipboard">Вставить фото из буфера</button>
+        <button @click="insertPhotoFromGallery">Выбрать из галереи</button>
+        <button @click="closePhotoModal">Отмена</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { addProject, fetchProjects } from "../lib/common_methods.js";
-import { inject } from "vue";
 export default {
-  setup() {
-    const user = inject('user');
-        return {
-      user,
-    };
-    console.log(user);
-  },
   data() {
     return {
       fontSize: "16px",
       selection: null,
       selectedBlockIndex: null,
+      showPhotoModal: false,
       project: {
         title: "",
         description: "",
         blocks: [
-          {type: "text", content: "", fontSize: "16px"},
+          { type: "text", content: "", fontSize: "16px", showButtons: false },
         ],
       },
+      photoInsertIndex: null,
     };
   },
   methods: {
     applyStyle(style) {
       if (!this.selection || this.selectedBlockIndex === null) return;
-      const range = this.selection.getRangeAt(0);
-      const span = document.createElement("span");
-
-      if (style === "bold") {
-        span.style.fontWeight =
-            this.selection.focusNode.parentElement.style.fontWeight === "bold"
-                ? "normal"
-                : "bold";
-      }
-      if (style === "italic") {
-        span.style.fontStyle =
-            this.selection.focusNode.parentElement.style.fontStyle === "italic"
-                ? "normal"
-                : "italic";
-      }
-      if (style === "underline") {
-        span.style.textDecoration =
-            this.selection.focusNode.parentElement.style.textDecoration === "underline"
-                ? "none"
-                : "underline";
-      }
-      range.surroundContents(span);
+      document.execCommand(style);
     },
     saveSelection(index) {
       this.selection = window.getSelection();
@@ -121,10 +120,70 @@ export default {
     },
     updateBlockContent(event, index) {
       this.project.blocks[index].content = event.target.innerHTML;
+      this.makeLinksClickable();
     },
     addBlock(type) {
       const fontSize = type === "text" ? "16px" : "";
-      this.project.blocks.push({type, content: "", fontSize});
+      this.project.blocks.push({ type, content: "", fontSize, showButtons: false });
+    },
+    addBlockAtIndex(type, index) {
+      const fontSize = type === "text" ? "16px" : "";
+      this.project.blocks.splice(index + 1, 0, { type, content: "", fontSize, showButtons: false });
+    },
+    showPhotoOptions() {
+      this.showPhotoModal = true;
+      this.photoInsertIndex = this.project.blocks.length; // Вставить в конец
+    },
+    showPhotoOptionsAtIndex(index) {
+      this.showPhotoModal = true;
+      this.photoInsertIndex = index + 1; // Вставить после текущего блока
+    },
+    closePhotoModal() {
+      this.showPhotoModal = false;
+      this.photoInsertIndex = null;
+    },
+    insertPhotoFromClipboard() {
+      navigator.clipboard.read().then((items) => {
+        for (const item of items) {
+          if (item.types.includes("image/png") || item.types.includes("image/jpeg")) {
+            item.getType(item.types[0]).then((blob) => {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                this.project.blocks.splice(this.photoInsertIndex, 0, {
+                  type: 'photo',
+                  content: e.target.result,
+                  fontSize: "",
+                  showButtons: false
+                });
+                this.closePhotoModal();
+              };
+              reader.readAsDataURL(blob);
+            });
+          }
+        }
+      });
+    },
+    insertPhotoFromGallery() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.project.blocks.splice(this.photoInsertIndex, 0, {
+              type: 'photo',
+              content: e.target.result,
+              fontSize: "",
+              showButtons: false
+            });
+            this.closePhotoModal();
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
     },
     updateFontSize(event) {
       if (this.selectedBlockIndex !== null) {
@@ -141,26 +200,37 @@ export default {
       const url = prompt("Введите URL:");
       if (url) {
         document.execCommand("createLink", false, url);
+        this.makeLinksClickable();
       }
     },
     alignText(alignment) {
-      document.execCommand("justify" + alignment.charAt(0).toUpperCase() + alignment.slice(1));
+      document.execCommand(`justify${alignment.charAt(0).toUpperCase() + alignment.slice(1)}`);
+    },
+    deleteBlock(index) {
+      this.project.blocks.splice(index, 1);
     },
     saveProject() {
       console.log(this.project);
     },
-    async postProject() {
-      console.log(this.project);
-      console.log(JSON.stringify(this.project));
-        const error = await addProject(JSON.stringify(this.project), this.user.id);
-        const data = await fetchProjects();
-        console.log(JSON.parse(data[0].project_data));
-        console.log(data);
-        if (error)
-          throw error;
-      
+    makeLinksClickable() {
+      const links = document.querySelectorAll(".content-block a");
+      links.forEach(link => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          window.open(link.href, '_blank');
+        });
+      });
+    },
+    showAddButtons(index) {
+      this.$set(this.project.blocks[index], 'showButtons', true);
+    },
+    hideAddButtons(index) {
+      this.$set(this.project.blocks[index], 'showButtons', false);
+    },
   },
-},
+  mounted() {
+    this.makeLinksClickable();
+  }
 };
 </script>
 
@@ -180,6 +250,12 @@ export default {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  position: sticky;
+  top: 20px; /* Увеличенный отступ сверху */
+  background-color: #f5f5f5;
+  z-index: 1000;
+  padding-top: 10px; /* Добавим отступ сверху */
+  padding-bottom: 10px; /* Добавим отступ снизу */
 }
 
 .toolbar-item {
@@ -206,6 +282,10 @@ export default {
   margin-bottom: 20px;
 }
 
+.content-wrapper {
+  position: relative;
+}
+
 .content-block {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -213,6 +293,12 @@ export default {
   margin-bottom: 10px;
   border-radius: 4px;
   width: 100%;
+  position: relative;
+}
+
+.photo-block {
+  max-width: 100%;
+  height: auto;
 }
 
 .add-block-buttons {
@@ -240,5 +326,62 @@ export default {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.delete-block-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete-block-button::before {
+  content: '✖';
+  font-size: 16px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.add-inline-buttons {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.add-inline-buttons .add-block-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 5px;
+  font-size: 12px;
 }
 </style>
