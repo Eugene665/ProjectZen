@@ -163,3 +163,55 @@ export async function fetchProject(projectId) {
   if (error) throw error;
   return data;
 }
+
+export async function updateCompanyDescription(companyId, description) {
+  try {
+    const { data, error } = await supabase
+      .from("companies")
+      .update({ about: description })
+      .eq("id", companyId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Ошибка обновления описания компании:", error.message);
+    throw error;
+  }
+}
+
+export const updateUsername = async (userId, newUsername) => {
+  try {
+    const { error } = await supabase
+      .from("users")
+      .update({ username: newUsername })
+      .eq("id", userId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return true;
+  } catch (error) {
+    console.error("Ошибка обновления имени:", error);
+    throw new Error("Не удалось обновить имя.");
+  }
+};
+
+
+export const updatePassword = async (newPassword) => {
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return true;
+  } catch (error) {
+    console.error("Ошибка обновления пароля:", error);
+    throw new Error("Не удалось обновить пароль.");
+  }
+};
