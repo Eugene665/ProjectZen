@@ -23,6 +23,7 @@
         v-model="project.title"
         class="project-title"
         placeholder="Введите название проекта"
+        required
       />
     </div>
 
@@ -32,6 +33,7 @@
         v-model="project.description"
         class="project-description"
         placeholder="Введите описание проекта"
+        required
       ></textarea>
     </div>
 
@@ -73,6 +75,7 @@
     <!-- Кнопка сохранения -->
     <div class="save-button">
       <button @click="saveProject">Сохранить проект</button>
+      <button @click="postProject">Опубликовать проект</button>
     </div>
 
     <!-- Модальное окно для вставки фото -->
@@ -88,7 +91,15 @@
 </template>
 
 <script>
+  import { uploadImageToSupabase, addProject, fetchProjects, deleteImageFromSupabase } from "../lib/common_methods.js";
+  import { inject } from "vue";
 export default {
+  setup () {
+    const user = inject('user');
+    return {
+      user
+    };
+  },
   data() {
     return {
       fontSize: "16px",
@@ -142,49 +153,49 @@ export default {
       this.showPhotoModal = false;
       this.photoInsertIndex = null;
     },
-    insertPhotoFromClipboard() {
-      navigator.clipboard.read().then((items) => {
-        for (const item of items) {
-          if (item.types.includes("image/png") || item.types.includes("image/jpeg")) {
-            item.getType(item.types[0]).then((blob) => {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                this.project.blocks.splice(this.photoInsertIndex, 0, {
-                  type: 'photo',
-                  content: e.target.result,
-                  fontSize: "",
-                  showButtons: false
-                });
-                this.closePhotoModal();
-              };
-              reader.readAsDataURL(blob);
-            });
-          }
-        }
-      });
-    },
-    insertPhotoFromGallery() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.project.blocks.splice(this.photoInsertIndex, 0, {
-              type: 'photo',
-              content: e.target.result,
-              fontSize: "",
-              showButtons: false
-            });
-            this.closePhotoModal();
-          };
-          reader.readAsDataURL(file);
-        }
-      };
-      input.click();
-    },
+    async insertPhotoFromClipboard() {
+     const items = await navigator.clipboard.read();
+     for (const item of items) {
+       const imageType = item.types.find(type => type.startsWith('image/'));
+       if (imageType) {
+         const blob = await item.getType(imageType);
+         const imageUrl = await uploadImageToSupabase(blob, `clipboard.png`);
+         if (imageUrl) {
+           const newBlock = {
+             type: 'photo',
+             content: imageUrl,
+             fontSize: "",
+             showButtons: false
+           };
+           this.project.blocks.splice(this.photoInsertIndex, 0, newBlock);
+           this.closePhotoModal();
+         }
+       }
+     }
+     input.click();
+   },
+     async insertPhotoFromGallery() {
+       const input = document.createElement("input");
+       input.type = "file";
+       input.accept = "image/*";
+       input.onchange = async (event) => {
+         const file = event.target.files[0];
+         if (file) {
+           const imageUrl = await uploadImageToSupabase(file, file.name);
+           if (imageUrl) {
+             const newBlock = {
+               type: 'photo',
+               content: imageUrl,
+               fontSize: "",
+               showButtons: false
+             };
+             this.project.blocks.splice(this.photoInsertIndex, 0, newBlock);
+             this.closePhotoModal();
+           }
+         }
+       };
+       input.click();
+     },
     updateFontSize(event) {
       if (this.selectedBlockIndex !== null) {
         this.project.blocks[this.selectedBlockIndex].fontSize = event.target.value;
@@ -206,12 +217,27 @@ export default {
     alignText(alignment) {
       document.execCommand(`justify${alignment.charAt(0).toUpperCase() + alignment.slice(1)}`);
     },
-    deleteBlock(index) {
+    async deleteBlock(index) {
+      if (this.project.blocks[index].type == 'photo') {
+        const data = await deleteImageFromSupabase(this.project.blocks[index].content);
+        console.log(data);
+      }
       this.project.blocks.splice(index, 1);
     },
     saveProject() {
       console.log(this.project);
     },
+    async postProject() {
+      console.log(this.project);
+      console.log(JSON.stringify(this.project));
+        const error = await addProject(JSON.stringify(this.project), this.user.id);
+        const data = await fetchProjects();
+        console.log(JSON.parse(data[0].project_data));
+        console.log(data);
+        if (error)
+          throw error;
+      
+  },
     makeLinksClickable() {
       const links = document.querySelectorAll(".content-block a");
       links.forEach(link => {
