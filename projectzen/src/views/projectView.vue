@@ -19,9 +19,9 @@
             </div>
             
         </div>
-        <div v-else>loading</div>
+        <div v-else>loading...</div>
     </div>
-    <div v-else>load</div>
+    <div v-else>loading...</div>
 </template>
 
 <script>

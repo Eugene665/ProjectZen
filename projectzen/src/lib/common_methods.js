@@ -163,3 +163,15 @@ export async function fetchProject(projectId) {
   if (error) throw error;
   return data;
 }
+
+export async function searchProjects(searchQuery) {
+  const { data, error } = await supabase.rpc("search_projects", {
+    p_search_query: searchQuery,
+  });
+
+  if (error) {
+    console.error("Error fetching projects:", error);
+  } else {
+    return data;
+  }
+}

@@ -25,7 +25,7 @@ router.beforeEach((to, from, next) => {
   const user = inject("user");
   if (to.path === "/profile" && !isAuthenticated.value) {
     next("/login");
-  } else if (to.path === "/project_page" && !user.value.company_name) {
+  } else if (to.path === "/project_page" && user.value.type !== "company") {
     next("/");
   } else {
     next();

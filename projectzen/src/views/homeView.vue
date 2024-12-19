@@ -1,11 +1,7 @@
 <template>
-<router-link v-if="!isAuthenticated" to="/login" class="link">Вход/Регистрация</router-link>
-<div v-else>Hello user <button @click="logout">Выйти</button></div>
-<router-link to="/profile">
-      <button>Профиль</button>
-    </router-link>
+  <Header></Header>
     <div class="main_container">
-      <div v-for="(project) in projects" :key="project.id" :value="project.id">
+      <div v-for="(project) in paginatedData" :key="project.id" :value="project.id">
         <router-link :to="`/project/${project.id}`">
         title: {{ project.project_data.title }}
         <br>
@@ -14,17 +10,30 @@
         description: {{ project.project_data.description }}
       </router-link>
       </div>
+      <div class="buttons">
+        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+      </div>
+      <p>Page {{ currentPage }} of {{ totalPages }}</p>
     </div>
 </template>
 
 <script>
+import Header from "../components/header.vue";
 import { ref, inject } from "vue";
 import { fetchProjects } from "../lib/common_methods";
 export default {
+  components: {
+    Header
+  },
+  data () {
+    return {
+         currentPage: 1,
+         itemsPerPage: 5
+       };
+  },
     setup() {
-      const login = inject('login');
-      const isAuthenticated = inject('isAuthenticated');
-      const logout = inject('logout');
+      
       const projects = ref([]);
       const maxLength = 100;
       const fetch = async () => {
@@ -47,12 +56,32 @@ export default {
 
       fetch();
       return {
-        login,
-        isAuthenticated,
-        logout,
         projects
       };
+    },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.projects.length / this.itemsPerPage);
+      },
+      paginatedData() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+         const end = start + this.itemsPerPage;
+         return this.projects.slice(start, end);
+      }
+    },
+    methods: {
+      nextPage() {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++;
+        }
+      },
+      prevPage() {
+         if (this.currentPage > 1) {
+           this.currentPage--;
+         }
+       }
     }
+
 }
 
 
