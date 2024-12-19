@@ -20,20 +20,26 @@
   </template>
   
   <script>
-  import { ref, inject } from "vue";
+  import { ref, inject,computed} from "vue";
+  import { uploadProfileIcon} from '../lib/common_methods'; 
   
   export default {
     setup() {
       const user = inject('user');
       const logout = inject('logout');
       const profileIconUrl = computed(() => user.value.icon);
+      let selectedFile = 'default';
+      const handleFileChange = (event) => {
+      selectedFile = event.target.files[0]
+      console.log(selectedFile);
+    }
       const uploadPI = async () => {
         if (!selectedFile) {
         alert('Сначала выберите изображение');
         return;
       }
         try {
-        const data = await uploadProfileIcon(selectedFile, user.value.id);
+        const data = await uploadProfileIcon(selectedFile, user.value.id,user.value.type);
         user.value.icon = data; 
         console.log(user.value.icon);
         localStorage.setItem("userLogin", JSON.stringify(user.value))
@@ -45,8 +51,9 @@
       return {
         user,
         logout,
-        selectFile,
-        fileInput,
+        selectedFile,
+        uploadPI,
+        handleFileChange,
       };
     }
   }

@@ -120,7 +120,7 @@ export async function deleteImageFromSupabase(imageUrl) {
   console.log("Image deleted successfully:", data);
   return true;
 }
-export async function uploadProfileIcon(file, userId) {
+export async function uploadProfileIcon(file, userId,type) {
   console.log(file);
   const filePath = `${Date.now()}_${file.name}`;
   try {
@@ -135,12 +135,13 @@ export async function uploadProfileIcon(file, userId) {
     if (error) {
       throw new Error(error.message);
     }
-    const newFilePath = `https://wfgqrxoadlatrszkqrlv.supabase.co/storage/v1/object/profile_icons/${data.path}`;
+    const newFilePath = `https://ktgmzsriglttmczagbfc.supabase.co/storage/v1/object/profile_icons/${data.path}`;
     const { error: updateError } = await supabase.rpc(
       "add_users_profile_icon",
       {
-        user_id: userId,
-        path: newFilePath,
+        p_user_id: userId,
+        p_path: newFilePath,
+        p_role: type
       }
     );
 
