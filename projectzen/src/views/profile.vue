@@ -1,23 +1,28 @@
 <template>
     <div>
         <div>
-  <img class="profile_image" :src="profileIconUrl" alt="Profile Icon"/>
-</div>
-  <input type="file" @change="handleFileChange" accept="image/*" />
-    <button @click="uploadPI">Загрузить картинку</button>
+            <img class="profile_image" :src="profileIconUrl" alt="Profile Icon"/>
+        </div>
+        <input type="file" @change="handleFileChange" accept="image/*" />
+        <button @click="uploadPI">Загрузить картинку</button>
   
-      <p v-if="user">Привет, {{ user.username }}!</p>
-      <p v-if="user">{{ user.email }}</p>
+        <p v-if="user">Привет, {{ user.username }}!</p>
+        <p v-if="user">{{ user.email }}</p>
   
-      <p v-else>Загрузка...</p>
-  
-      <router-link to="/project_page">
+        <p v-else>Загрузка...</p>
+
+        <router-link v-if ="user.type === 'company'" to="/project_page">
         <button>Создать проект</button>
-      </router-link>
+        </router-link>
+        <div v-if="user.type === 'company'" class="description-block">
+            <h3>Описание компании</h3>
+            <textarea v-model="companyDescription" placeholder="Введите описание вашей компании"></textarea>
+            <button>Добавить описание</button>
+        </div>
   
-      <button @click="logout">Выйти</button>
+        <button @click="logout">Выйти</button>
     </div>
-  </template>
+</template>
   
   <script>
   import { ref, inject,computed} from "vue";
@@ -62,19 +67,13 @@
   </script>
   
   <style scoped>
-  .avatar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .avatar {
-    width: 80px;
-    height: 80px;
+  .profile_image {
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #ddd;
+    border: 5px solid #7a7a7a;
   }
   </style>
+  
   

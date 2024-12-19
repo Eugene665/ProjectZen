@@ -43,7 +43,7 @@
           }
           else {
             usr = await authenticateCompany(this.email, this.password);
-            this.login({ email: usr.email, id: usr.id, company_name: usr.company_name, about: usr.about, icon: usr.profile_icon_path, type: "company" });
+            this.login({ email: usr.email, id: usr.id, username: usr.company_name, about: usr.about, icon: usr.profile_icon_path, type: "company" });
           }
           
           this.$router.push('/');
