@@ -74,7 +74,6 @@
 
     <!-- Кнопка сохранения -->
     <div class="save-button">
-      <button @click="saveProject">Сохранить проект</button>
       <button @click="postProject">Опубликовать проект</button>
     </div>
 
@@ -223,9 +222,6 @@ export default {
         console.log(data);
       }
       this.project.blocks.splice(index, 1);
-    },
-    saveProject() {
-      console.log(this.project);
     },
     async postProject() {
       console.log(this.project);
