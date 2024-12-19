@@ -120,7 +120,7 @@ export async function deleteImageFromSupabase(imageUrl) {
   console.log("Image deleted successfully:", data);
   return true;
 }
-export async function uploadProfileIcon(file, userId,type) {
+export async function uploadProfileIcon(file, userId, type) {
   console.log(file);
   const filePath = `${Date.now()}_${file.name}`;
   try {
@@ -141,7 +141,7 @@ export async function uploadProfileIcon(file, userId,type) {
       {
         p_user_id: userId,
         p_path: newFilePath,
-        p_role: type
+        p_role: type,
       }
     );
 
@@ -153,4 +153,13 @@ export async function uploadProfileIcon(file, userId,type) {
   } catch (error) {
     throw new Error(error.message);
   }
+}
+
+export async function fetchProject(projectId) {
+  const { data, error } = await supabase.rpc("fetch_project", {
+    p_project_id: projectId,
+  });
+
+  if (error) throw error;
+  return data;
 }

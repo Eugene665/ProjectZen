@@ -4,6 +4,7 @@ import Login from "./components/logForm.vue";
 import Register from "./components/regForm.vue";
 import Profile from "./views/profile.vue";
 import Project_page from "./views/project_page.vue";
+import ProjectView from "./views/projectView.vue";
 import { ref, inject } from "vue";
 const routes = [
   { path: "/", component: Home },
@@ -11,6 +12,7 @@ const routes = [
   { path: "/register", component: Register },
   { path: "/project_page", component: Project_page },
   { path: "/profile", component: Profile, meta: { requiresAuth: true } },
+  { path: "/project/:id", component: ProjectView },
 ];
 
 const router = createRouter({
