@@ -34,6 +34,7 @@
       console.log(selectedFile);
     }
       const uploadPI = async () => {
+        console.log(selectedFile, user.value.id,user.value.type)
         if (!selectedFile) {
         alert('Сначала выберите изображение');
         return;
@@ -54,6 +55,7 @@
         selectedFile,
         uploadPI,
         handleFileChange,
+        profileIconUrl
       };
     }
   }
