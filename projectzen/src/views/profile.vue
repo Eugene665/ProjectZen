@@ -1,17 +1,15 @@
 <template>
     <div>
-      <div v-if="user.avatar" class="avatar-container">
-        <img :src="user.avatar" alt="Avatar" class="avatar" />
-      </div>
+        <div>
+  <img class="profile_image" :src="profileIconUrl" alt="Profile Icon"/>
+</div>
+  <input type="file" @change="handleFileChange" accept="image/*" />
+    <button @click="uploadPI">Загрузить картинку</button>
   
       <p v-if="user">Привет, {{ user.username }}!</p>
       <p v-if="user">{{ user.email }}</p>
   
       <p v-else>Загрузка...</p>
-  
-      <button @click="selectFile">Загрузить аватар</button>
-      
-      <input type="file" ref="fileInput" @change="handleFileUpload" accept="image/*" style="display: none;" />
   
       <router-link to="/project_page">
         <button>Создать проект</button>
@@ -28,25 +26,21 @@
     setup() {
       const user = inject('user');
       const logout = inject('logout');
-      const fileInput = ref(null);
-  
-      const selectFile = () => {
-        fileInput.value.click();
-      };
-  
-      const handleFileUpload = async (event) => {
-        const file = event.target.files[0];
-  
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-
-            user.avatar = reader.result;
-            
-          };
-          reader.readAsDataURL(file);
+      const profileIconUrl = computed(() => user.value.icon);
+      const uploadPI = async () => {
+        if (!selectedFile) {
+        alert('Сначала выберите изображение');
+        return;
+      }
+        try {
+        const data = await uploadProfileIcon(selectedFile, user.value.id);
+        user.value.icon = data; 
+        console.log(user.value.icon);
+        localStorage.setItem("userLogin", JSON.stringify(user.value))
+      } catch (error) {
+          console.error('Ошибка загрузки изображения:', error);  
         }
-      };
+      }
   
       return {
         user,
