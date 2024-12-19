@@ -1,6 +1,9 @@
 <template>
 <router-link v-if="!isAuthenticated" to="/login" class="link">Вход/Регистрация</router-link>
 <div v-else>Hello user <button @click="logout">Выйти</button></div>
+<router-link to="/profile">
+      <button>Профиль</button>
+    </router-link>
 
 </template>
 
