@@ -226,13 +226,16 @@ export default {
     async postProject() {
       console.log(this.project);
       console.log(JSON.stringify(this.project));
+      if (this.project.title === '' || this.project.description === '') {
+        
+      } else {
         const error = await addProject(JSON.stringify(this.project), this.user.id);
         const data = await fetchProjects();
         console.log(JSON.parse(data[0].project_data));
         console.log(data);
         if (error)
           throw error;
-      
+      }
   },
     makeLinksClickable() {
       const links = document.querySelectorAll(".content-block a");
