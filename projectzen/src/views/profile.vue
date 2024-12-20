@@ -5,8 +5,8 @@
         <h2 class="company-name">{{ user.username }}</h2> 
         <input type="file" @change="handleFileChange" accept="image/*" />
         <button @click="uploadPI" class="upload-btn">Загрузить картинку</button>
-        <button @click="toggleEditNameModal" class="edit-btn">Изменить имя</button>
-        <button @click="toggleEditPasswordModal" class="edit-btn">Изменить пароль</button>
+        <button v-if="user.type === 'user'" @click="toggleEditNameModal" class="edit-btn">Изменить имя</button>
+        <button v-if="user.type === 'user'" @click="toggleEditPasswordModal" class="edit-btn">Изменить пароль</button>
       </div>
 
       <button @click="logout" class="logout-btn">Выйти</button>
@@ -48,7 +48,7 @@
   
   <script>
   import { supabase } from "../lib/supabase";
-  import { updateCompanyDescription, uploadProfileIcon,updateUsername, updatePassword } from "../lib/common_methods";
+  import { updateCompanyDescription, uploadProfileIcon, changeUsersPassword, changeUsersName } from "../lib/common_methods";
   import { ref, inject, computed, onMounted } from "vue";
   
   export default {
@@ -139,7 +139,7 @@
         return;
       }
       try {
-        await updateUsername(user.value.id, newUsername.value);
+        await changeUsersName(user.value.id, newUsername.value);
         user.value.username = newUsername.value;
         localStorage.setItem("userLogin", JSON.stringify(user.value));
 
@@ -157,7 +157,8 @@
         return;
       }
       try {
-        await updatePassword(newPassword.value);
+        console.log(newPassword);
+        await changeUsersPassword(user.value.id, newPassword.value);
 
         alert("Пароль успешно обновлен!");
         toggleEditPasswordModal();

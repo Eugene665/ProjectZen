@@ -175,3 +175,39 @@ export async function searchProjects(searchQuery) {
     return data;
   }
 }
+
+export async function updateCompanyDescription(companyId, description) {
+  try {
+    const { data, error } = await supabase.rpc("update_description", {
+      p_company_id: companyId,
+      p_description: description,
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function changeUsersPassword(userId, pswd) {
+  try {
+    const { error } = await supabase.rpc("update_user_password", {
+      p_user_id: userId,
+      p_password: pswd,
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function changeUsersName(userId, name) {
+  try {
+    const { error } = await supabase.rpc("update_username", {
+      p_user_id: userId,
+      p_name: name,
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
