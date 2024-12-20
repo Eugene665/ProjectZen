@@ -67,7 +67,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #d8f88d;
+  background-color: #FF9F00;
   padding: 20px; 
 }
 

@@ -220,6 +220,7 @@
   border: 3px solid #ddd;
   padding: 20px;
   border-radius: 15px;
+  background-color: #FF9F00;
 }
 
 .profile_image {
@@ -227,7 +228,7 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid #7a7a7a; /* Обводка для аватарки */
+  border: 5px solid #7a7a7a; 
 }
 
 .company-name {
@@ -245,8 +246,8 @@
   padding: 12px 20px;
   border: none;
   cursor: pointer;
-  border-radius: 25px; /* Более округлые кнопки */
-  border: 2px solid #4CAF50; /* Обводка для кнопки */
+  border-radius: 25px; 
+  border: 2px solid #4CAF50; 
 }
 
 .upload-btn:hover {
@@ -285,8 +286,8 @@ textarea:focus {
   padding: 12px 20px;
   border: none;
   cursor: pointer;
-  border-radius: 25px; /* Более округлые кнопки */
-  border: 2px solid #4CAF50; /* Обводка для кнопки */
+  border-radius: 25px;
+  border: 2px solid #4CAF50;
 }
 
 .save-btn:hover {
@@ -294,17 +295,17 @@ textarea:focus {
 }
 
 .create-project-btn {
-  background-color: #2196F3;
+  background-color: #FF9F00;
   color: white;
   padding: 12px 20px;
   border: none;
   cursor: pointer;
-  border-radius: 25px; /* Более округлые кнопки */
-  border: 2px solid #2196F3; /* Обводка для кнопки */
+  border-radius: 25px; 
+  border: 2px solid #000000; 
 }
 
 .create-project-btn:hover {
-  background-color: #1976D2;
+  background-color: #FF9F00;
 }
 
 .success {
@@ -365,30 +366,59 @@ button:focus {
 }
 
 .logout-btn, .create-back-btn {
-  padding: 12px 20px; /* Увеличенные размеры кнопок */
+  padding: 12px 20px; 
   border: none;
   cursor: pointer;
-  border-radius: 25px; /* Более округлые кнопки */
+  border-radius: 25px; 
   border: 2px solid;
 }
 
 .create-back-btn {
-  background-color: #2196F3;
+  background-color: #FF9F00;;
   color: white;
-  border-color: #2196F3; /* Обводка для кнопки */
+  border-color: #FF9F00;;
 }
 
 .create-back-btn:hover {
-  background-color: #1976D2;
+  background-color: #FF7F00;;
 }
 
 .logout-btn {
   background-color: #f44336;
   color: white;
-  border-color: #f44336; /* Обводка для кнопки */
+  border-color: #f44336; 
 }
 
 .logout-btn:hover {
   background-color: #e53935;
+}
+
+.edit-btn{
+    background-color: #868686;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px; 
+  width: 150px;
+  height: 65px;
+  border: 2px solid #000000; 
+}
+.edit-btn:hover{
+    background-color: #505050;
+}
+.cancel-btn{
+    background-color: #f44336;
+  color: white;
+  padding: 12px 20px;
+  margin-left: 50px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px;
+  border: 2px solid #f44336;
+}
+
+.cancel-btn:hover{
+    background-color: #e53935;
 }
 </style>
