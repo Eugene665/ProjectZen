@@ -1,4 +1,5 @@
-<template>
+
+<template>    
     <div class="profile-container">
       <div class="avatar-container">
         <img class="profile_image" :src="profileIconUrl" alt="Profile Icon" />
@@ -7,9 +8,14 @@
         <button @click="uploadPI" class="upload-btn">Загрузить картинку</button>
         <button v-if="user.type === 'user'" @click="toggleEditNameModal" class="edit-btn">Изменить имя</button>
         <button v-if="user.type === 'user'" @click="toggleEditPasswordModal" class="edit-btn">Изменить пароль</button>
-      </div>
+    </div>
 
+    <div class ="buttons-container">
+    <router-link to="/">
+        <button class="create-back-btn">Главная страница</button>
+    </router-link>
       <button @click="logout" class="logout-btn">Выйти</button>
+    </div>
   
       <div v-if="user.type === 'company'" class="description-block">
         <h3>Описание компании</h3>
@@ -43,7 +49,6 @@
         <button @click="toggleEditPasswordModal" class="cancel-btn">Отмена</button>
       </div>
     </div>
-
   </template>
   
   <script>
@@ -197,129 +202,132 @@
     },
   };
   </script>
-  
-  <style scoped>
-  .profile-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 30px;
-    gap: 20px;
-  }
-  
-  .avatar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .profile_image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 5px solid #7a7a7a;
-  }
-  
-  .company-name {
-    margin-top: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .upload-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .upload-btn:hover {
-    background-color: #45a049;
-  }
-  
-  .logout-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #f44336;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .logout-btn:hover {
-    background-color: #e53935;
-  }
-  
-  .description-block {
-    text-align: center;
-    width: 80%;
-    max-width: 600px;
-  }
-  
-  textarea {
-    width: 100%;
-    height: 150px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
-  }
-  
-  .save-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .save-btn:hover {
-    background-color: #45a049;
-  }
-  
-  .create-project-btn {
-    background-color: #2196F3;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .create-project-btn:hover {
-    background-color: #1976D2;
-  }
-  
-  .success {
-    color: green;
-    font-size: 16px;
-  }
-  
-  .error {
-    color: red;
-    font-size: 16px;
-  }
-  
-  .current-description {
-    margin-top: 20px;
-    font-size: 16px;
-    color: #555;
-  }
-  
-  textarea:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-  
-  button:focus {
-    outline: none;
-  }
-  .modal {
+
+<style scoped>
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 3px solid #ddd;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.profile_image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #7a7a7a; /* Обводка для аватарки */
+}
+
+.company-name {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
+
+.upload-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px; /* Более округлые кнопки */
+  border: 2px solid #4CAF50; /* Обводка для кнопки */
+}
+
+.upload-btn:hover {
+  background-color: #45a049;
+}
+
+.description-block {
+  text-align: center;
+  width: 80%;
+  max-width: 600px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px; /* Более округлые кнопки */
+  border: 2px solid #4CAF50; /* Обводка для кнопки */
+}
+
+.save-btn:hover {
+  background-color: #45a049;
+}
+
+.create-project-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px; /* Более округлые кнопки */
+  border: 2px solid #2196F3; /* Обводка для кнопки */
+}
+
+.create-project-btn:hover {
+  background-color: #1976D2;
+}
+
+.success {
+  color: green;
+  font-size: 16px;
+}
+
+.error {
+  color: red;
+  font-size: 16px;
+}
+
+.current-description {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #555;
+}
+
+button:focus {
+  outline: none;
+}
+
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -337,6 +345,7 @@
   border-radius: 8px;
   width: 300px;
   text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .modal input {
@@ -344,6 +353,42 @@
   padding: 8px;
   width: 80%;
   border-radius: 4px;
+  border: 1px solid #ccc;
 }
-  </style>
-  
+
+.buttons-container {
+  display: flex;
+  gap: 10px; 
+  position: absolute;
+  top: 20px; 
+  right: 20px; 
+}
+
+.logout-btn, .create-back-btn {
+  padding: 12px 20px; /* Увеличенные размеры кнопок */
+  border: none;
+  cursor: pointer;
+  border-radius: 25px; /* Более округлые кнопки */
+  border: 2px solid;
+}
+
+.create-back-btn {
+  background-color: #2196F3;
+  color: white;
+  border-color: #2196F3; /* Обводка для кнопки */
+}
+
+.create-back-btn:hover {
+  background-color: #1976D2;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border-color: #f44336; /* Обводка для кнопки */
+}
+
+.logout-btn:hover {
+  background-color: #e53935;
+}
+</style>
