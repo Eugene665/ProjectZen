@@ -32,6 +32,27 @@
       </router-link>
     </div>
 
+    <div v-if="user.type === 'company'" class="profile-container">
+      <div v-for="(project) in paginatedData" :key="project.id" :value="project.id">
+        <router-link :to="`/project/${project.id}`">
+        title: {{ project.project_data.title }}
+        <br>
+        added: {{ project.created_at }}
+        <br>
+        description: {{ project.project_data.description }}
+      </router-link>
+      <div class="likes">
+        {{ projectLikes.find((curProject) => project.id === curProject.id).likes }}   
+        <button @click="likeProject(project.id)">like</button>
+      </div>
+      </div>
+      <div class="buttons">
+        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+        <p>Page {{ currentPage }} of {{ totalPages }}</p>
+       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+      </div>
+    </div>
+
     <div v-if="showEditNameModal" class="modal">
       <div class="modal-content">
         <h3>Введите новое имя</h3>
@@ -53,10 +74,16 @@
   
   <script>
   import { supabase } from "../lib/supabase";
-  import { updateCompanyDescription, uploadProfileIcon, changeUsersPassword, changeUsersName } from "../lib/common_methods";
+  import { updateCompanyDescription, uploadProfileIcon, changeUsersPassword, addLikeToProject, changeUsersName, fetchLikesForProject, fetchCompanyProjects } from "../lib/common_methods";
   import { ref, inject, computed, onMounted } from "vue";
   
   export default {
+    data () {
+    return {
+         currentPage: 1,
+         itemsPerPage: 5
+       };
+  },
     setup() {
       const user = inject("user");
       const logout = inject("logout");
@@ -70,8 +97,9 @@
       const newUsername = ref("");
       const newPassword = ref("");
       let selectedFile = "default";
-      
-  
+      const projectLikes = ref([]);
+      const projects = ref([]);
+      const maxLength = 100;
       const handleFileChange = (event) => {
         selectedFile = event.target.files[0];
       };
@@ -93,6 +121,42 @@
           console.error("Ошибка загрузки изображения:", error);
         }
       };
+
+      const getCompanyProjects = async () => {
+            try {
+                const dataToParse = await fetchCompanyProjects(user.value.id);
+                for (let i = 0; i < dataToParse.length; i++) {
+            const date = new Date(dataToParse[i].created_at);
+            dataToParse[i].created_at = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')} ${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${String(date.getUTCDate()).padStart(2, '0')}`; 
+            dataToParse[i].project_data = JSON.parse(dataToParse[i].project_data); 
+            if (dataToParse[i].project_data.description.length > maxLength) {
+              dataToParse[i].project_data.description = text.slice(0, maxLength) + '...';
+            }
+            projectLikes.value.push({id:dataToParse[i].id, likes: 0});
+            await fetchLikes(dataToParse[i].id);
+          }
+          projects.value = dataToParse;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        const fetchLikes = async (projectId) => {
+        try {
+          const data = await fetchLikesForProject(projectId);
+          projectLikes.value.find((project) => project.id === projectId).likes = data;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      const likeProject = async (projectId) => {
+        try {
+          const data = await addLikeToProject(projectId, user.value.id);
+          await fetchLikes(projectId);
+        } catch (error) {
+          console.log(error);
+        }
+      }
   
       const saveDescription = async () => {
         if (!companyDescription.value.trim()) {
@@ -176,6 +240,7 @@
     onMounted(() => {
       if (user.value.type === "company") {
         fetchDescription();
+        getCompanyProjects();
       }
     });
   
@@ -198,8 +263,33 @@
         showEditPasswordModal,
         toggleEditNameModal,
         toggleEditPasswordModal,
+        projects,
+        likeProject,
+        projectLikes
       };
     },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.projects.length / this.itemsPerPage);
+      },
+      paginatedData() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+         const end = start + this.itemsPerPage;
+         return this.projects.slice(start, end);
+      }
+    },
+    methods: {
+      nextPage() {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++;
+        }
+      },
+      prevPage() {
+         if (this.currentPage > 1) {
+           this.currentPage--;
+         }
+       }
+    }
   };
   </script>
 
