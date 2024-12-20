@@ -1,5 +1,6 @@
 <template>
   <div class="project-editor">
+
     <!-- Верхняя панель инструментов -->
     <div class="toolbar">
       <select v-model="fontSize" class="toolbar-item" @change="updateFontSize">
@@ -16,6 +17,10 @@
       <button class="toolbar-item" @click="alignText('left')">По левому краю</button>
       <button class="toolbar-item" @click="alignText('center')">По центру</button>
     </div>
+
+    <router-link to="/">
+        <button class="create-back-btn">Главная страница</button>
+    </router-link>
 
     <!-- Поле для ввода названия проекта -->
     <div class="input-section">
@@ -410,4 +415,24 @@ export default {
   padding: 5px;
   font-size: 12px;
 }
+
+.create-back-btn{
+  display: flex;
+  gap: 10px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px;
+  border: 2px solid;
+  background-color: #FF9F00;;
+  color: white;
+  border-color: #FF9F00;;
+}
+.create-back-btn:hover {
+  background-color: #FF7F00;;
+}
+
 </style>
