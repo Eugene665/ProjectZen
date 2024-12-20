@@ -238,7 +238,6 @@ export default {
         const data = await fetchProjects();
         console.log(JSON.parse(data[0].project_data));
         console.log(data);
-        this.$router.push('/profile');
         if (error)
           throw error;
       }

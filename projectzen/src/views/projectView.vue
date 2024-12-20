@@ -1,9 +1,15 @@
 <template>
-    <div v-if="project"><h3>Проект компании <router-link :to="`/company/${project.company_id}`">{{project.company}}</router-link></h3></div>
-  
+  <div v-if="project">
+    <h3>
+      Проект компании
+      <router-link :to="`/company/${project.company_id}`">{{ project.company }}</router-link>
+    </h3>
+  </div>
+
   <router-link to="/">
-        <button class="create-back-btn">Главная страница</button>
-    </router-link>
+    <button class="create-back-btn">Главная страница</button>
+  </router-link>
+
   <div v-if="project" class="project_info">
     <div class="project_card">
       <h1 class="project_title">{{ project.project_data.title }}</h1>
@@ -21,7 +27,9 @@
             class="content-block"
             :style="block.type === 'text' ? { fontSize: block.fontSize, paddingRight: '10px' } : { paddingRight: '10px' }"
           >
-            <template v-if="block.type === 'text'">{{ block.content }}</template>
+            <template v-if="block.type === 'text'">
+              <div v-html="block.content"></div>
+            </template>
             <template v-else-if="block.type === 'photo'">
               <img :src="block.content" alt="Фото" class="photo" />
             </template>
@@ -30,6 +38,7 @@
       </div>
     </div>
   </div>
+
   <div v-else>loading...</div>
 </template>
 
@@ -52,10 +61,8 @@ export default {
         const dataToParse = await fetchProject(projectId);
         const date = new Date(dataToParse[0].created_at);
         dataToParse[0].created_at = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')} ${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${String(date.getUTCDate()).padStart(2, '0')}`;
-        console.log(dataToParse[0]);
         dataToParse[0].project_data = JSON.parse(dataToParse[0].project_data);
         project.value = dataToParse[0];
-        console.log(project);
         await fetchLikes();
       } catch (error) {
         console.log(error);
@@ -128,7 +135,7 @@ export default {
   font-size: 1rem;
   line-height: 1.4;
   color: #555;
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 
 .like-button {
@@ -148,12 +155,6 @@ export default {
   background-color: #e0e0e0;
 }
 
-.like-count {
-  margin-right: 10px;
-  font-size: 1rem;
-  color: #333;
-}
-
 .blocks {
   display: flex;
   flex-direction: column;
@@ -169,34 +170,35 @@ export default {
 .photo {
   width: 100%;
   height: auto;
-  max-width: 300px;
+  max-width: 600px;
   border-radius: 8px;
 }
 
-h3, h2{
-    font-size: 24px;
-    font-weight: bold;
-    color: #9e6202;
-    text-transform: uppercase;
-    text-align: center;
-
+h3, h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #9e6202;
+  text-transform: uppercase;
+  text-align: center;
 }
-.create-back-btn{
+
+.create-back-btn {
   display: flex;
-  gap: 10px; 
+  gap: 10px;
   position: absolute;
-  top: 20px; 
+  top: 20px;
   right: 20px;
-  padding: 12px 20px; 
+  padding: 12px 20px;
   border: none;
   cursor: pointer;
-  border-radius: 25px; 
+  border-radius: 25px;
   border: 2px solid;
-  background-color: #FF9F00;;
+  background-color: #FF9F00;
   color: white;
-  border-color: #FF9F00;;
+  border-color: #FF9F00;
 }
+
 .create-back-btn:hover {
-  background-color: #FF7F00;;
+  background-color: #FF7F00;
 }
 </style>
