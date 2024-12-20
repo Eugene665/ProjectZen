@@ -4,6 +4,10 @@
         <br>
         description: {{ project.project_data.description }}
         <br>
+        <div class="likes">
+        {{likes }}   
+        <button @click="likeProject">like</button>
+      </div>
         <br>
         <div v-if="project && project.project_data && project.project_data.blocks" class="blocks">
             <div v-for="(block, index) in project.project_data.blocks" :key="index">
@@ -27,7 +31,7 @@
 <script>
  import { ref, inject } from 'vue';
  import { useRoute } from 'vue-router';
- import { fetchProject } from "../lib/common_methods";
+ import { fetchProject, addLikeToProject, fetchLikesForProject } from "../lib/common_methods";
  export default {
     setup () {
         const isAuthenticated = inject('isAuthenticated');
@@ -35,6 +39,7 @@
             const route = useRoute();
             const projectId = route.params.id;
             const project = ref(null);
+            const likes = ref(0);
         const fetch = async () => {
             try {
                 const dataToParse = await fetchProject(projectId);
@@ -43,14 +48,35 @@
             dataToParse.created_at = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')} ${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${String(date.getUTCDate()).padStart(2, '0')}`; 
             dataToParse.project_data = JSON.parse(dataToParse.project_data); 
             project.value = dataToParse;
+            await fetchLikes();
             console.log(project);
             } catch (error) {
                 console.log(error);
             }
         }
+
+        const fetchLikes = async () => {
+        try {
+          const data = await fetchLikesForProject(projectId);
+            likes.value = data;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      const likeProject = async () => {
+        try {
+          const data = await addLikeToProject(projectId, user.value.id);
+          await fetchLikes(projectId);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
         fetch();
         return {
-            project
+            project,
+            likeProject,
+            likes
         }
     }
  }
