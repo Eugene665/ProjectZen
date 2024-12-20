@@ -211,3 +211,52 @@ export async function changeUsersName(userId, name) {
     throw new Error(error.message);
   }
 }
+
+export async function addLikeToProject(projectId, userId) {
+  try {
+    const { error } = await supabase.rpc("add_rating_to_project", {
+      p_project_id: projectId,
+      p_user_id: userId,
+    });
+    if (error) throw error;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function addLikeToCompany(companyId, userId) {
+  try {
+    const { data, error } = await supabase.rpc("add_rating_to_company", {
+      p_company_id: companyId,
+      p_user_id: userId,
+    });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function fetchLikesForProject(projectId) {
+  try {
+    const { data, error } = await supabase.rpc("fetch_project_ratings", {
+      p_project_id: projectId,
+    });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function fetchLikesForCompany(companyId) {
+  try {
+    const { data, error } = await supabase.rpc("fetch_company_ratings", {
+      p_company_id: companyId,
+    });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

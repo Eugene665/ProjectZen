@@ -9,19 +9,23 @@
         <br>
         description: {{ project.project_data.description }}
       </router-link>
+      <div class="likes">
+        {{ projectLikes.find((curProject) => project.id === curProject.id).likes }}   
+        <button @click="likeProject(project.id)">like</button>
+      </div>
       </div>
       <div class="buttons">
         <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+        <p>Page {{ currentPage }} of {{ totalPages }}</p>
        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
       </div>
-      <p>Page {{ currentPage }} of {{ totalPages }}</p>
     </div>
 </template>
 
 <script>
 import Header from "../components/header.vue";
 import { ref, inject } from "vue";
-import { fetchProjects } from "../lib/common_methods";
+import { fetchProjects, addLikeToProject, fetchLikesForProject } from "../lib/common_methods";
 export default {
   components: {
     Header
@@ -33,9 +37,10 @@ export default {
        };
   },
     setup() {
-      
+      const user = inject('user');
       const projects = ref([]);
       const maxLength = 100;
+      const projectLikes = ref([]);
       const fetch = async () => {
         try {
           let dataToParse = await fetchProjects();
@@ -46,6 +51,8 @@ export default {
             if (dataToParse[i].project_data.description.length > maxLength) {
               dataToParse[i].project_data.description = text.slice(0, maxLength) + '...';
             }
+            projectLikes.value.push({id:dataToParse[i].id, likes: 0});
+            await fetchLikes(dataToParse[i].id);
           }
           
           projects.value = dataToParse;
@@ -54,9 +61,28 @@ export default {
         }
       }
 
+      const fetchLikes = async (projectId) => {
+        try {
+          const data = await fetchLikesForProject(projectId);
+          projectLikes.value.find((project) => project.id === projectId).likes = data;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      const likeProject = async (projectId) => {
+        try {
+          const data = await addLikeToProject(projectId, user.value.id);
+          await fetchLikes(projectId);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
       fetch();
       return {
-        projects
+        projects,
+        likeProject,
+        projectLikes
       };
     },
     computed: {
