@@ -1,5 +1,6 @@
 
 <template>    
+    <h3>Ваш профиль</h3>
     <div class="profile-container">
       <div class="avatar-container">
         <img class="profile_image" :src="profileIconUrl" alt="Profile Icon" />
@@ -32,26 +33,30 @@
       </router-link>
     </div>
 
-    <div v-if="user.type === 'company'" class="profile-container">
-      <div v-for="(project) in paginatedData" :key="project.id" :value="project.id">
-        <router-link :to="`/project/${project.id}`">
-        title: {{ project.project_data.title }}
-        <br>
-        added: {{ project.created_at }}
-        <br>
-        description: {{ project.project_data.description }}
-      </router-link>
-      <div class="likes">
-        {{ projectLikes.find((curProject) => project.id === curProject.id).likes }}   
-        <button @click="likeProject(project.id)">like</button>
-      </div>
-      </div>
-      <div class="buttons">
-        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-        <p>Page {{ currentPage }} of {{ totalPages }}</p>
-       <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+    <div v-if="user.type === 'company'" class="main_container">
+        <h2>Ваши проекты</h2>
+        <div class="projects">
+      <div v-for="(project) in paginatedData" :key="project.id" :value="project.id" class="project_card">
+        <router-link :to="'/project/' + project.id" class="project_link">
+          <h2 class="project_title">{{ project.project_data.title }}</h2>
+          <p class="project_added">Added: {{ project.created_at }}</p>
+          <p class="project_description">{{ project.project_data.description }}</p>
+        </router-link>
+        <div class="likes">
+          <button @click="likeProject(project.id)" class="like-button">
+            <span class="like-count">{{ projectLikes.find((curProject) => project.id === curProject.id).likes }}</span>
+            <font-awesome-icon icon="fa-thumbs-up" />
+            Like
+          </button>
+        </div>
       </div>
     </div>
+    <div class="buttons">
+      <button @click="prevPage" :disabled="currentPage === 1" class="pagination_button">Previous</button>
+      <p class="page_info">Page {{ currentPage }} of {{ totalPages }}</p>
+      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination_button">Next</button>
+    </div>
+  </div>
 
     <div v-if="showEditNameModal" class="modal">
       <div class="modal-content">
@@ -510,5 +515,112 @@ button:focus {
 
 .cancel-btn:hover{
     background-color: #e53935;
+}
+
+.projects {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.project_card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 60%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.project_card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.project_link {
+  text-decoration: none;
+  color: #333;
+}
+
+.project_title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.project_added {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.project_description {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #555;
+}
+
+.like-button {
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  transition: background-color 0.3s ease;
+}
+
+.like-button:hover {
+  background-color: #e0e0e0;
+}
+
+.like-count {
+  margin-right: 10px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.pagination_button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.pagination_button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination_button:hover:enabled {
+  background: #0056b3;
+}
+h3, h2{
+    font-size: 24px;
+    font-weight: bold;
+    color: #FF9F00;
+    text-transform: uppercase;
+    text-align: center;
+
 }
 </style>
