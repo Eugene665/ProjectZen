@@ -6,7 +6,7 @@
 4. run **npm run dev** to launch an app
 
 ## Usage
-1.Register as Company
+Markup: 1.Register as Company
 2.Login with data provided
 3.Go to profile
 4.Add project by clicking on a corresponding button
