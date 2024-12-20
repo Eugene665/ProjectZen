@@ -5,7 +5,7 @@
       <img :src="company[0].profile_icon_path" alt="company logo" class="company-logo">
         <h1>{{ company[0].company_name }}</h1>
         <p>{{ company[0].about }}</p>
-      <div class="like-company">
+      <div class="like-company" v-if="isAuthenticated">
         <button @click="likeCompany" class="like-button">
           <div class="like-count">{{ companyLikes }}</div>
           Like
@@ -20,7 +20,7 @@
           <p class="project_added">Added: {{ project.created_at }}</p>
           <p class="project_description">{{ project.project_data.description }}</p>
         </router-link>
-        <div class="likes">
+        <div class="likes" v-if="isAuthenticated">
           <button @click="likeProject(project.id)" class="like-button">
             <div class="like-count">{{ projectLikes.find((curProject) => project.id === curProject.id).likes }}</div>
             Like
@@ -56,6 +56,7 @@ export default {
   setup() {
     const user = inject('user');
     const logout = inject("logout");
+    const isAuthenticated = inject("isAuthenticated");
     const company = ref({});
     const projects = ref([]);
     const maxLength = 100;
@@ -137,6 +138,7 @@ export default {
       likeProject,
       companyLikes,
       likeCompany,
+      isAuthenticated
     }
   },
   computed: {

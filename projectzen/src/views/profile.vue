@@ -91,6 +91,7 @@
   },
     setup() {
       const user = inject("user");
+      const isAuthenticated = inject("isAuthenticated");
       const logout = inject("logout");
       const profileIconUrl = computed(() => user.value.icon);
       const companyDescription = ref("");
@@ -270,7 +271,8 @@
         toggleEditPasswordModal,
         projects,
         likeProject,
-        projectLikes
+        projectLikes,
+        isAuthenticated
       };
     },
     computed: {

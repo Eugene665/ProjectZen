@@ -1,4 +1,6 @@
 <template>
+    
+  
   <Header></Header>
   <div class="main_container">
     <div v-for="(project) in paginatedData" :key="project.id" :value="project.id" class="project_card">
@@ -10,7 +12,7 @@
         </p>
         <p class="project_description">{{ project.project_data.description }}</p>
       </router-link>
-      <div class="likes">
+      <div class="likes" v-if="isAuthenticated">
         <span>{{ projectLikes.find((curProject) => project.id === curProject.id).likes }}</span>
         <button 
           @click="likeProject(project.id)" 
@@ -51,6 +53,7 @@ export default {
     const projects = ref([]);
     const maxLength = 100;
     const projectLikes = ref([]);
+    const isAuthenticated = inject("isAuthenticated");
     const fetch = async () => {
       try {
         let dataToParse = await fetchProjects();
@@ -92,7 +95,8 @@ export default {
     return {
       projects,
       likeProject,
-      projectLikes
+      projectLikes,
+      isAuthenticated
     };
   },
   computed: {
@@ -121,6 +125,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .main_container {
   display: flex;
   flex-direction: column;

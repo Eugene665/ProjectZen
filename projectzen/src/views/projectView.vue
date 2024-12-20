@@ -1,5 +1,6 @@
 <template>
-  <h3>Проект компании </h3>
+    <div v-if="project"><h3>Проект компании <router-link :to="`/company/${project.company_id}`">{{project.company}}</router-link></h3></div>
+  
   <router-link to="/">
         <button class="create-back-btn">Главная страница</button>
     </router-link>
@@ -8,7 +9,7 @@
       <h1 class="project_title">{{ project.project_data.title }}</h1>
       <p class="project_description">{{ project.project_data.description }}</p>
 
-      <div class="likes">
+      <div class="likes" v-if="isAuthenticated">
         <button @click="likeProject" class="like-button">
           Like {{ likes }}
         </button>
@@ -49,10 +50,12 @@ export default {
     const fetch = async () => {
       try {
         const dataToParse = await fetchProject(projectId);
-        const date = new Date(dataToParse.created_at);
-        dataToParse.created_at = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')} ${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${String(date.getUTCDate()).padStart(2, '0')}`;
-        dataToParse.project_data = JSON.parse(dataToParse.project_data);
-        project.value = dataToParse;
+        const date = new Date(dataToParse[0].created_at);
+        dataToParse[0].created_at = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')} ${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${String(date.getUTCDate()).padStart(2, '0')}`;
+        console.log(dataToParse[0]);
+        dataToParse[0].project_data = JSON.parse(dataToParse[0].project_data);
+        project.value = dataToParse[0];
+        console.log(project);
         await fetchLikes();
       } catch (error) {
         console.log(error);
@@ -82,6 +85,7 @@ export default {
       project,
       likeProject,
       likes,
+      isAuthenticated
     };
   },
 };

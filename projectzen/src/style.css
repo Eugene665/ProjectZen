@@ -1,5 +1,13 @@
 body {
-    background-color: #93a5f5;
-    font-family: 'Arial', sans-serif;
-    color: #333;
+  background-color: #93a5f5;
+  font-family: "Arial", sans-serif;
+  color: #333;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
