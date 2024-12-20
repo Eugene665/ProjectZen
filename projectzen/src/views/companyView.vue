@@ -5,7 +5,7 @@
       <img :src="company[0].profile_icon_path" alt="company logo" class="company-logo">
         <h1>{{ company[0].company_name }}</h1>
         <p>{{ company[0].about }}</p>
-      <div class="like-company" v-if="isAuthenticated">
+      <div class="like-company" v-if="isAuthenticated && user.type === 'user'">
         <button @click="likeCompany" class="like-button">
           <div class="like-count">{{ companyLikes }}</div>
           Like
@@ -20,7 +20,7 @@
           <p class="project_added">Added: {{ project.created_at }}</p>
           <p class="project_description">{{ project.project_data.description }}</p>
         </router-link>
-        <div class="likes" v-if="isAuthenticated">
+        <div class="likes" v-if="isAuthenticated && user.type === 'user'">
           <button @click="likeProject(project.id)" class="like-button">
             <div class="like-count">{{ projectLikes.find((curProject) => project.id === curProject.id).likes }}</div>
             Like

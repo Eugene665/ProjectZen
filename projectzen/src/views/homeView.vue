@@ -12,7 +12,7 @@
         </p>
         <p class="project_description">{{ project.project_data.description }}</p>
       </router-link>
-      <div class="likes" v-if="isAuthenticated">
+      <div class="likes" v-if="isAuthenticated && user.type === 'user'">
         <span>{{ projectLikes.find((curProject) => project.id === curProject.id).likes }}</span>
         <button 
           @click="likeProject(project.id)" 

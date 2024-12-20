@@ -9,7 +9,7 @@
       <h1 class="project_title">{{ project.project_data.title }}</h1>
       <p class="project_description">{{ project.project_data.description }}</p>
 
-      <div class="likes" v-if="isAuthenticated">
+      <div class="likes" v-if="isAuthenticated && user.type === 'user'">
         <button @click="likeProject" class="like-button">
           Like {{ likes }}
         </button>
