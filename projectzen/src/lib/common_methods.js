@@ -260,3 +260,27 @@ export async function fetchLikesForCompany(companyId) {
     throw new Error(error.message);
   }
 }
+
+export async function fetchCompanyInfo(companyId) {
+  try {
+    const { data, error } = await supabase.rpc("fetch_company", {
+      p_company_id: companyId,
+    });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function fetchCompanyProjects(companyId) {
+  try {
+    const { data, error } = await supabase.rpc("fetch_company_projects", {
+      p_company_id: companyId,
+    });
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
