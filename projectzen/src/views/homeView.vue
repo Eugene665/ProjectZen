@@ -54,6 +54,7 @@ export default {
     const maxLength = 100;
     const projectLikes = ref([]);
     const isAuthenticated = inject("isAuthenticated");
+    console.log(user);
     const fetch = async () => {
       try {
         let dataToParse = await fetchProjects();
@@ -96,7 +97,8 @@ export default {
       projects,
       likeProject,
       projectLikes,
-      isAuthenticated
+      isAuthenticated,
+      user
     };
   },
   computed: {

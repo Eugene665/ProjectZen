@@ -138,7 +138,8 @@ export default {
       likeProject,
       companyLikes,
       likeCompany,
-      isAuthenticated
+      isAuthenticated,
+      user
     }
   },
   computed: {

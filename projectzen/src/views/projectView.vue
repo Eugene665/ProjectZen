@@ -85,7 +85,8 @@ export default {
       project,
       likeProject,
       likes,
-      isAuthenticated
+      isAuthenticated,
+      user
     };
   },
 };
